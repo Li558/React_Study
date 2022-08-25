@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>1_state</title>
+</head>
+<body>
+	<!-- 准备好一个“容器” -->
+	<div id="test"></div>
+	
+	<!-- 引入react核心库 -->
+	<script type="text/javascript" src="../js/react.development.js"></script>
+	<!-- 引入react-dom，用于支持react操作DOM -->
+	<script type="text/javascript" src="../js/react-dom.development.js"></script>
+	<!-- 引入babel，用于将jsx转为js -->
+	<script type="text/javascript" src="../js/babel.min.js"></script>
+
+	<script type="text/babel">
+        //创建组件
+        class Weather extends React.Component {
+            //构造器调用几次？  --------1次
+            constructor(props) {
+                super(props)
+                this.state = {isHot:true,wind:'微风'}
+                //解决changeWeather this指向问题
+                this.changeWeather = this.changeWeather.bind(this);
+            }
+            //render调用几次？-----------1+n次 1为初始化 n为修改数据次数
+            render() {
+                const {isHot,wind} = this.state
+                console.log(this)
+                // return <h1 id="title">今天天气很{isHot?'炎热':'凉爽'}</h1>
+                return <h1 onClick={this.changeWeather}>今天天气很{isHot?'炎热':'凉爽'},{wind}</h1>
+            }
+            //changeWeather -----点几次 调用几次
+            changeWeather(){
+                //weather放在原型对象上，供实例使用
+                //由于changeWeather是作为onClick的回调，所以不是实例调用的 是直接调用
+                //类中的方法默认开始了局部的严格模式，所以changeWeather中的this为undefined
+                const isHot =  this.state.isHot;
+                console.log(isHot);
+                //严重注意：状态(state)不可直接更改 下列为直接更改
+                // this.state.isHot = !isHot;
+                //状态必须经过setState,且更新是一种合并，不是替换
+                this.setState({isHot:!isHot})
+                
+            }
+        }
+        ReactDOM.render(<Weather/>, document.getElementById('test'))
+        const title = document.getElementById('title');
+        //1
+        // title.addEventListener('click', ()=>{
+        //     alert('标题被点击了');
+        // })
+
+        //2
+        // title.onclick = ()=>{
+        //     alert('标题被点击了')
+        // }
+	</script>
+</body>
+</html>
